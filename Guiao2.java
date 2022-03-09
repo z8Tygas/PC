@@ -1,3 +1,5 @@
+import java.util.Random;
+
 class NotEnoughFunds extends Exception {}
 class InvalidAccount extends Exception {}
 
@@ -45,9 +47,28 @@ class Bank {
         }
         return sum;
     }
+    public void transfer(int from, int to, int val) throws InvalidAccount, NotEnoughFunds {
+        if (from == to) return;
+        withdraw(from, val);
+        deposit(to, val);
+    }
 }
 
-
+class Transferer extends Thread {
+    final int iterations;
+    final Bank b;
+    public Transferer(int iterations, Bank b) {this.iterations = iterations; this.b = b;}
+    public void run() {
+        Random r = new Random();
+        for (int i = 0; i < iterations; i++){
+            int from = r.nextInt(b.getAccountsLength());
+            int to = r.nextInt(b.getAccountsLength());
+            try{
+                b.transfer(from, to, 1);
+            } catch(Exception e) {}
+        }
+    }
+}
 
 class Depositor extends Thread {
     final int iterations;
@@ -64,8 +85,7 @@ class Depositor extends Thread {
         for (int i = 0; i < iterations; ++i) {
             try {
                 b.deposit(i % x, 1);
-            }
-            catch(Exception e) {}
+            } catch(Exception e) {}
         }
     }
 }
@@ -82,7 +102,8 @@ class main {
         for (int i = 0; i < NC; ++i) { todasContas[i] = i; }
         for (int i = 0; i < NC; ++i) { b.deposit(i, 0); }
         
-        for (int i = 0; i < N; ++i) { a[i] = new Depositor(i, b); }
+        //for (int i = 0; i < N; ++i) { a[i] = new Depositor(i, b); }
+        for (int i = 0; i < N; ++i) { a[i] = new Transferer(i, b); }
 
         for (int i = 0; i < N; ++i) { a[i].start(); }
         for (int i = 0; i < N; ++i) { a[i].join();  }
