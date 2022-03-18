@@ -9,16 +9,16 @@ JC = javac
 # If your version of make can't handle the leading tabs on each
 # line, just remove them (these are also just added for readability).
 CLASSES = \
-	counter.java \
-	counterV2.java \
+	ex1.java \
+	ex2.java  \
 
 default: classes
 
 classes: $(CLASSES:.java=.class)
 
-counter: $(counter.java)
+ex1: $(ex1.java)
 
-counterV2: $(counterV2.java)
+ex2: $(ex2.java)
 
 clean:
 	$(RM) *.class
